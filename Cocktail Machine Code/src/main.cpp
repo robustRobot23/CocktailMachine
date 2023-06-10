@@ -1,12 +1,11 @@
 #include <Arduino.h>
 #include "cocktails.hpp"
 
-// put function declarations here:
 
 void setup() {
-  // put your setup code here, to run once:
+  Serial.begin(115200);
+  while (!Serial);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
 }

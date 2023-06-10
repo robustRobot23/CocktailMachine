@@ -17,10 +17,10 @@ char* Mixers[] = {
     "Tonic",
     "Lemonade",
     "Coke",
-    "OrangeJ",
+    "Orange Juice",
     "Prosseco",
-    "PeachSchapps",
-    "RasberryCordial"
+    "Peach Schapps",
+    "Rasberry Cordial"
 };
 
 enum Liqour {

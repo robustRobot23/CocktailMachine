@@ -21,7 +21,7 @@ enum Mixer {
     RasberryCordial
 };
 
-std::string Mixers[8] = {
+static std::string Mixers[8] = {
     "None",
     "Tonic",
     "Lemonade",
@@ -41,7 +41,7 @@ enum Liquor {
     Rum
 };
 
-std::string Liquors[6] = {
+static std::string Liquors[6] = {
     "None",
     "Gin",
     "Vodka",

@@ -37,7 +37,6 @@ void CocktailHandling::pumpOn(int pump, long int startTime) {
 //This would also be a lot nicer if a pump struct or class was passed to this function
 bool CocktailHandling::checkPump(int pump, long int duration) {
     bool pumpDone = false;
-    //whats the function call to get current time?
     switch (pump) {
         case 1:
             pumpDone = duration <= millis() - pump1Start;

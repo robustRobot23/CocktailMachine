@@ -10,11 +10,10 @@
 class Pumps {
     public:
     Pumps(int p);
-    void initPump();
     void resetPump();
     void pumpRun();
 
-    Mixer mixer;
+    Mixer mixer = None;
     int milliLitre = 0;
     bool finished = true;
 
@@ -23,7 +22,6 @@ class Pumps {
 
     long int startTime = 0;
     long int pumpDuration = 0;
-
 }
 
 

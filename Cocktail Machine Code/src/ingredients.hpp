@@ -1,6 +1,8 @@
 #ifndef INGREDIENTS_H
 #define INGREDIENTS_H
 
+#define NUMBER_MIXERS 8
+
 enum Mixer {
     None,
     Tonic,
@@ -12,7 +14,7 @@ enum Mixer {
     RasberryCordial
 };
 
-static std::string Mixers[8] = {
+static std::string Mixers[NUMBER_MIXERS] = {
     "None",
     "Tonic",
     "Lemonade",

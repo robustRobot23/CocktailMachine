@@ -1,40 +1,25 @@
 #include "cocktails.hpp"
 
-Cocktails::Cocktails(Liquor l, Mixer m1, int mL1, Mixer m2, int mL2, Mixer m3, int mL3, Mixer m4, int mL4) {
-    liquor = l;
+Cocktail::Cocktail(Liquor l, int s, Mixer m1, int mL1, Mixer m2, int mL2, Mixer m3, int mL3, Mixer m4, int mL4) {
+    liquors[0] = l;
+    shots[0] = s;
 
-    mixerOne = m1;
-    volumeOne = mL1;
+    mixers[1] = m1;
+    volumes[1] = mL1;
 
-    mixerTwo = m2;
-    volumeTwo = mL2;
-    
-    mixerThree = m3;
-    volumeThree = mL3;
+    mixers[2] = m1;
+    volumes[2] = mL1;
 
-    mixerFour = m4;
-    volumeFour = mL4;
+    mixers[3] = m1;
+    volumes[3] = mL1;
+
+    mixers[4] = m1;
+    volumes[4] = mL1;
+
 }
 
 
 
-//This would also be a lot nicer if a pump struct or class was passed to this function
-bool CocktailHandling::checkPump(int pump, long int duration) {
-    bool pumpDone = false;
-    switch (pump) {
-        case 1:
-            pumpDone = duration <= millis() - pump1Start;
-            break;
-        case 2:
-            pumpDone = duration <= millis() - pump2Start;
-            break;
-        case 3:
-            pumpDone = duration <= millis() - pump3Start;
-            break;
-        case 4:
-            pumpDone = duration <= millis() - pump4Start;
-            break;
-    }
-    return pumpDone;
-}
+
+
 

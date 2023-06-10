@@ -1,9 +1,6 @@
 #ifndef COCKTAILS_H
 #define COCKTAILS_H
 
-#include <string>
-
-
 enum Mixer {
     None,
     Tonic,
@@ -15,19 +12,19 @@ enum Mixer {
     RasberryCordial
 };
 
-std::string Mixers[8] = {
+char* Mixers[] = {
     "None",
     "Tonic",
     "Lemonade",
     "Coke",
-    "Orange Juice",
+    "OrangeJ",
     "Prosseco",
-    "Peach Schapps",
-    "Rasberry Cordial"
+    "PeachSchapps",
+    "RasberryCordial"
 };
 
 enum Liqour {
-    Empty,
+    None,
     Gin,
     Vodka,
     Whiskey,
@@ -35,7 +32,7 @@ enum Liqour {
     Rum
 };
 
-std::string Liquors[6] = {
+char* Liquors[] = {
     "None",
     "Gin",
     "Vodka",

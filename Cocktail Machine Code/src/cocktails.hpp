@@ -3,66 +3,23 @@
 
 #include <Arduino.h>
 #include <string>
-
+#include "ingredients.hpp"
 /*
  * Need to add pumps class or struct
  * Currently thinking a struct will be better
  * 
  */
 
-enum Mixer {
-    None,
-    Tonic,
-    Lemonade,
-    Coke,
-    OrangeJ,
-    Prosseco,
-    PeachSchapps,
-    RasberryCordial
-};
-
-static std::string Mixers[8] = {
-    "None",
-    "Tonic",
-    "Lemonade",
-    "Coke",
-    "Orange Juice",
-    "Prosseco",
-    "Peach Schapps",
-    "Rasberry Cordial"
-};
-
-enum Liquor {
-    Empty,
-    Gin,
-    Vodka,
-    Whiskey,
-    Tequila,
-    Rum
-};
-
-static std::string Liquors[6] = {
-    "None",
-    "Gin",
-    "Vodka",
-    "Whiskey",
-    "Tequila",
-    "Rum"
-};
 
 
 
 class CocktailHandling {
     public:
-    void pumpOn(int pump, long int startTime);
     // Allows the code to continue running and periodically check if current < startTime + duration
-    bool checkPump(int pump, long int duration);
+    // bool checkPump(int pump, long int duration);
 
     private:
-    long int pump1Start;
-    long int pump2Start;
-    long int pump3Start;
-    long int pump4Start;
+
 
 };
 

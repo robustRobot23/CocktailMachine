@@ -16,23 +16,7 @@ Cocktails::Cocktails(Liquor l, Mixer m1, int mL1, Mixer m2, int mL2, Mixer m3, i
     volumeFour = mL4;
 }
 
-//This would be a lot nicer if a pump struct or class was passed to this function
-void CocktailHandling::pumpOn(int pump, long int startTime) {
-    switch(pump) {
-        case 1:
-            pump1Start = startTime;
-            break;
-        case 2:
-            pump2Start = startTime;
-            break;
-        case 3:
-            pump3Start = startTime;
-            break;
-        case 4:
-            pump4Start = startTime;
-            break;
-    }
-}
+
 
 //This would also be a lot nicer if a pump struct or class was passed to this function
 bool CocktailHandling::checkPump(int pump, long int duration) {

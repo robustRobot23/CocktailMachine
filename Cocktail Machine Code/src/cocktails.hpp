@@ -3,6 +3,12 @@
 
 #include <string>
 
+/*
+ * Need to add pumps class or struct
+ * Currently thinking a struct will be better
+ * 
+ */
+
 
 enum Mixer {
     None,
@@ -26,7 +32,7 @@ std::string Mixers[8] = {
     "Rasberry Cordial"
 };
 
-enum Liqour {
+enum Liquor {
     Empty,
     Gin,
     Vodka,
@@ -48,18 +54,36 @@ std::string Liquors[6] = {
 
 class CocktailHandling {
     public:
+    void pumpOn(int pump, long int startTime);
     // Allows the code to continue running and periodically check if current < startTime + duration
-    void PumpOnTime(int pump, long int startTime, long int duration);
-    bool getStatus(int pump);
+    bool checkPump(int pump, long int duration);
 
-    
+    private:
+    long int pump1Start;
+    long int pump2Start;
+    long int pump3Start;
+    long int pump4Start;
+
 };
 
 
 class Cocktails {
     public: 
     // Initialise the cocktails ingredients when the class is created
-    Cocktails(Liqour liqour, Mixer mixerOne, Mixer mixerTwo, Mixer mixerThree, Mixer MixerFour);
+    Cocktails(Liquor l, Mixer m1, int mL1, Mixer m2, int mL2, Mixer m3, int mL3, Mixer m4, int mL4);
+
+    private:
+    Liquor liquor;
+
+    Mixer mixerOne;
+    Mixer mixerTwo;
+    Mixer mixerThree;
+    Mixer mixerFour;
+
+    int volumeOne;
+    int volumeTwo;
+    int volumeThree;
+    int volumeFour;
 };
 
 #endif  

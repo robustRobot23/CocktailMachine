@@ -12,7 +12,7 @@ void CocktailMachine::initCocktails() {
 
 bool CocktailMachine::cocktailAvailable(Cocktail *cocktail) {
     bool available;
-    for (int m = 0; m < 4, m++){
+    for (int m = 0; m < 4; m++){
         available = false;
         for (int possibleMixer = 0; possibleMixer < NUMBER_MIXERS; possibleMixer++)
             if (cocktail->mixers[m] == possibleMixer) {
@@ -41,14 +41,75 @@ int CocktailMachine::findAvailable() {
 
 void CocktailMachine::initAll() {
     
-    pumps[0] = Pumps pump1(PUMP_PIN_1);
-    pumps[1] = Pumps pump2(PUMP_PIN_2);
-    pumps[2] = Pumps pump3(PUMP_PIN_3);
-    pumps[3] = Pumps pump4(PUMP_PIN_4);
+    pumps[0] = &(Pumps pump1(PUMP_PIN_1));
+    pumps[1] = &(Pumps pump2(PUMP_PIN_2));
+    pumps[2] = &(Pumps pump3(PUMP_PIN_3));
+    pumps[3] = &(Pumps pump4(PUMP_PIN_4));
     
 }
 
 void CocktailMachine::requestMixer(int i) {
     //display that we need mixer #i??
     //
+}
+
+
+void CocktailMachine::run() {
+    switch (state) {
+        case initIngredients:
+            //Definitely want to improve this state
+            // receive user input for ingredients
+            for (int i = 0; i < 4; i++) {
+                if (!pumps[i]->mixer) {
+                    //This line might change or be removed by an interupt
+                    requestMixer(i);
+                    break;
+                }
+            }
+
+            if (!liquor) {
+                //request liquor
+            } else { //all has been initialised
+                //create list of available pumps
+                // if (completeSelection()) {
+                //     
+                //     state = displayMenu;
+                // }
+            }
+
+            break;
+
+        case displayMenu:
+
+        //psuedocode ish
+            // OLED.display(availableCocktails[i])
+
+            // if (cocktailSelected) {
+            //      machine_p->currentCocktail = availableCocktails[i];
+            //      machine_p->state = makeDrink;
+            // }
+            break;
+
+        case makeDrink:
+            if (!stepperFinished) {
+                //run stepper for x amount of shots
+            } else if (!pumpsFinished) {
+                pumpsFinished = true; //unless proven otherwise
+                for (int i = 0; i < 4; i++) {
+                    if (!pumps[i]->finished) {
+                        pumpsFinished = false;
+                        pumps[i]->pumpRun();
+                    }
+                }
+            } else {
+                state = enjoy;
+            }
+            break;
+        // case enjoy:
+        //     //display "enjoy drink"
+        //     //play with neopixel
+        //     //Check loadcell for cup removal
+        //     break;
+
+    }
 }

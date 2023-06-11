@@ -15,7 +15,7 @@ class CocktailMachine {
     void initCocktails();
     int findAvailable();
     void requestMixer(int i);
-
+    void run();
     State state;
     Cocktail currentCocktail;
 

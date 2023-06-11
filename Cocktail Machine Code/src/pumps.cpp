@@ -15,7 +15,7 @@ void Pumps::resetPump() {
 void Pumps::pumpRun() {
     if (startTime == 0) { //pump hasn't run yet
         startTime = millis();
-        digitalWrite(pin, HIGH)
+        digitalWrite(pin, HIGH);
     }
     if (millis() - startTime >= pumpDuration) {
         digitalWrite(pin, LOW);

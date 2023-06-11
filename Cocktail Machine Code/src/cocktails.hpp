@@ -2,7 +2,6 @@
 #define COCKTAILS_H
 
 #include <Arduino.h>
-#include <string>
 #include "ingredients.hpp"
 
 #define ONE_SHOT            1
@@ -17,9 +16,8 @@
 class Cocktail {
     public: 
     // Initialise the cocktails ingredients when the class is created
-    Cocktail(Liquor l, int s; Mixer m1, int mL1, Mixer m2, int mL2, Mixer m3, int mL3, Mixer m4, int mL4);
+    Cocktail(Liquor l, int s, Mixer m1, int mL1, Mixer m2, int mL2, Mixer m3, int mL3, Mixer m4, int mL4);
 
-    private:
     Liquor liquors[1];
     int shots[1];
 

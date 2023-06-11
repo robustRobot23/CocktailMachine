@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "kernal.hpp"
+#include "machine.hpp"
 
 CocktailMachine machine;
 
@@ -10,5 +10,5 @@ void setup() {
 }
 
 void loop() {
-  run(*machine);
+  machine.run();
 }

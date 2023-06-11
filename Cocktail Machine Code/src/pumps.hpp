@@ -22,7 +22,7 @@ class Pumps {
 
     long int startTime = 0;
     long int pumpDuration = 0;
-}
+};
 
 
 

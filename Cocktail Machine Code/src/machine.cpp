@@ -91,8 +91,8 @@ void CocktailMachine::run() {
             // OLED.display(availableCocktails[i])
 
             // if (cocktailSelected) {
-            //      machine_p->currentCocktail = availableCocktails[i];
-            //      machine_p->state = makeDrink;
+            //      currentCocktail = availableCocktails[i];
+            //      state = makeDrink;
             // }
             break;
 

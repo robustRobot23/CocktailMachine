@@ -16,6 +16,8 @@ Cocktail::Cocktail(Liquor l, int s, Mixer m1, int mL1, Mixer m2, int mL2, Mixer 
     mixers[3] = m1;
     mixerVolumes[3] = mL1;
 
+    
+
 }
 
 

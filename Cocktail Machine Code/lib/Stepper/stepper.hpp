@@ -2,8 +2,8 @@
 #define STEPPER_H
 
 #include <Arduino.h>
-#include "pinDefinitions.hpp"
-#include "BasicStepperDriver.h"
+#include <pinDefinitions.hpp>
+#include <BasicStepperDriver.h>
 
 #define MOTOR_STEPS 200
 #define RPM 120

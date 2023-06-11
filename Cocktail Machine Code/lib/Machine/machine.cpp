@@ -1,9 +1,9 @@
-#include "machine.hpp" 
+#include <machine.hpp> 
 
-Machine::Machine() {
-    Serial.println("Machine Object Created");
-    initCocktails();
-}
+// Machine::Machine() {
+//     Serial.println("Machine Object Created");
+//     initCocktails();
+// }
 
 /// @brief Initialises all cocktails
 void Machine::initCocktails() {
@@ -94,7 +94,7 @@ void Machine::run() {
             // OLED.display(availableCocktails[i])
 
             // if (cocktailSelected) {
-            //      currentCocktail = availableCocktails[i];
+            //      currentCocktail = i;
             //      state = makeDrink;
             // }
             break;

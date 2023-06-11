@@ -2,7 +2,7 @@
 #define NEOPIXEL_H
 
 #include "Adafruit_NeoPixel.h"
-#include "pinDefinitions.hpp"
+#include <pinDefinitions.hpp>
 
 #define NUM_NEOPIXELS 24
 

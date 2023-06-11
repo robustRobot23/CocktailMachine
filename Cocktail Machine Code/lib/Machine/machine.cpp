@@ -1,10 +1,5 @@
 #include <machine.hpp> 
 
-// Machine::Machine() {
-//     Serial.println("Machine Object Created");
-//     initCocktails();
-// }
-
 /// @brief Initialises all cocktails
 void Machine::initCocktails() {
     Cocktail GnT(Gin, ONE_SHOT, Tonic, THREE_QUARTERS_CUP, None, 0, None, 0, None, 0);

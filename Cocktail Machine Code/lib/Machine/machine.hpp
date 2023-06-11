@@ -17,7 +17,6 @@ enum State {
 /// @brief Class that controls the machines state and drink making
 class Machine {
     public:
-    // Machine();
     void initAll();
     void initCocktails();
     int findAvailable();

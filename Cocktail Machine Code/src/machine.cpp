@@ -1,20 +1,23 @@
 #include "machine.hpp" 
 
-CocktailMachine::CocktailMachine(){
-    //
+Machine::Machine() {
+    Serial.println("Machine Object Created");
+    initCocktails();
 }
 
-void CocktailMachine::initCocktails() {
+/// @brief Initialises all cocktails
+void Machine::initCocktails() {
     Cocktail GnT(Gin, ONE_SHOT, Tonic, THREE_QUARTERS_CUP, None, 0, None, 0, None, 0);
     Cocktail GinLemonade(Gin, TWO_SHOTS, Lemonade, HALF_CUP, None, 0, None, 0, None, 0);
     Cocktail RumCoke(Rum, ONE_SHOT, Coke, THREE_QUARTERS_CUP, None, 0, None, 0, None, 0);
 
-    allCocktails[0] = &GnT;
-    allCocktails[1] = &GinLemonade;
-    allCocktails[2] = &RumCoke;
+    allCocktails[0] = GnT;
+    allCocktails[1] = GinLemonade;
+    allCocktails[2] = RumCoke;
 }
 
-bool CocktailMachine::cocktailAvailable(Cocktail *cocktail) {
+bool Machine::cocktailAvailable(int i) {
+    Cocktail *cocktail = availableCocktails[i];
     bool available;
     for (int m = 0; m < 4; m++){
         available = false;
@@ -30,20 +33,20 @@ bool CocktailMachine::cocktailAvailable(Cocktail *cocktail) {
     return available;
 }
 
-int CocktailMachine::findAvailable() {
+int Machine::findAvailable() {
 
-    Cocktail *ptrCurrentCocktail;
+    Cocktail *CurrentCocktail;
     int numAvailableCocktails = 0;
     for (int i = 0; i < TOTAL_NUMBER_COCKTAILS; i++) {
-        ptrCurrentCocktail = allCocktails[i];
-        if (cocktailAvailable(ptrCurrentCocktail)){
-            availableCocktails[numAvailableCocktails++] = ptrCurrentCocktail;
+        CurrentCocktail = &allCocktails[i];
+        if (cocktailAvailable(i)){
+            availableCocktails[numAvailableCocktails++] = CurrentCocktail;
         }
     }
     return numAvailableCocktails;
 }
 
-void CocktailMachine::initAll() {
+void Machine::initAll() {
     Pumps pump1(PUMP_PIN_1);
     Pumps pump2(PUMP_PIN_2);
     Pumps pump3(PUMP_PIN_3);
@@ -54,13 +57,13 @@ void CocktailMachine::initAll() {
     pumps[3] = &pump4;
 }
 
-void CocktailMachine::requestMixer(int i) {
+void Machine::requestMixer(int i) {
     //display that we need mixer #i??
     //
 }
 
 
-void CocktailMachine::run() {
+void Machine::run() {
     switch (state) {
         case initIngredients:
             //Definitely want to improve this state

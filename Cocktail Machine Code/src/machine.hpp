@@ -4,6 +4,7 @@
 #include "cocktails.hpp"
 #include "pumps.hpp"
 #include "ingredients.hpp"
+#include <Arduino.h>
 
 #define TOTAL_NUMBER_COCKTAILS 3
 
@@ -13,17 +14,17 @@ enum State {
   makeDrink,
   enjoy
 };
-class CocktailMachine {
+class Machine {
     public:
-    CocktailMachine();
+    Machine();
     void initAll();
     void initCocktails();
     int findAvailable();
     void requestMixer(int i);
-    bool cocktailAvailable(Cocktail *cocktail);
+    bool cocktailAvailable(int i);
     void run();
     State state;
-    Cocktail currentCocktail;
+    Cocktail *currentCocktail;
 
     Pumps* pumps[4];
     Liquor liquor = Empty;
@@ -31,7 +32,7 @@ class CocktailMachine {
     bool pumpsFinished = false;
     bool stepperFinished = false;
 
-    Cocktail* allCocktails[TOTAL_NUMBER_COCKTAILS];
+    Cocktail allCocktails[TOTAL_NUMBER_COCKTAILS];
     Cocktail* availableCocktails[TOTAL_NUMBER_COCKTAILS];
 
 };

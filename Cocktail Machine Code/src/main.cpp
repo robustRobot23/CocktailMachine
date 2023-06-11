@@ -1,14 +1,14 @@
 #include <Arduino.h>
-#include "machine.hpp"
+// #include "machine.hpp"
 
-CocktailMachine machine;
+// Machine machine;
 
 void setup() {
   Serial.begin(115200);
   while (!Serial);
-  machine.initAll();
+  // machine.initAll();
 }
 
 void loop() {
-  machine.run();
+  // machine.run();
 }

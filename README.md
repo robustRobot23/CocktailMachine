@@ -1,5 +1,4 @@
 # CocktailMachine
-KiCad files for cocktail machine PCB
 Currently working on a cocktail machine to pour a shot of liquor, and pump in up to 4 mixers.
 Machine contains:
   - 1 Stepper motor

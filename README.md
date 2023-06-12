@@ -8,4 +8,4 @@ Machine contains:
   - 1 Loadcell and HX711 breakout board
   - PCB V1
   - 1 OLED Screen
-  - 2 Quadrature encoder dials and pushbuttons
+  - 2 rotary encoder dials and pushbuttons

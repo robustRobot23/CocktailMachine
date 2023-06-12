@@ -9,3 +9,9 @@ Machine contains:
   - PCB V1
   - 1 OLED Screen
   - 2 rotary encoder dials and pushbuttons
+  
+**Code still not close to working.** 
+Currently creating the code structure:
+  Machine class
+  Cocktail class
+  Pump Class

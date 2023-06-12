@@ -2,9 +2,9 @@
 
 /// @brief Initialises all cocktails
 void Machine::initCocktails() {
-    Cocktail GnT(Gin, ONE_SHOT, Tonic, THREE_QUARTERS_CUP, None, 0, None, 0, None, 0);
-    Cocktail GinLemonade(Gin, TWO_SHOTS, Lemonade, HALF_CUP, None, 0, None, 0, None, 0);
-    Cocktail RumCoke(Rum, ONE_SHOT, Coke, THREE_QUARTERS_CUP, None, 0, None, 0, None, 0);
+    Cocktail GnT("GnT", Gin, ONE_SHOT, Tonic, THREE_QUARTERS_CUP, None, 0, None, 0, None, 0);
+    Cocktail GinLemonade("Gin and Lemonade", Gin, TWO_SHOTS, Lemonade, HALF_CUP, None, 0, None, 0, None, 0);
+    Cocktail RumCoke("Rum and Coke", Rum, ONE_SHOT, Coke, THREE_QUARTERS_CUP, None, 0, None, 0, None, 0);
 
     allCocktails[0] = GnT;
     allCocktails[1] = GinLemonade;
@@ -28,7 +28,7 @@ bool Machine::cocktailAvailable(int i) {
     return available;
 }
 
-int Machine::findAvailable() {
+void Machine::findAvailable() {
 
     Cocktail *CurrentCocktail;
     int numAvailableCocktails = 0;
@@ -38,14 +38,14 @@ int Machine::findAvailable() {
             availableCocktails[numAvailableCocktails++] = CurrentCocktail;
         }
     }
-    return numAvailableCocktails;
+    numberAvailableCocktails = numAvailableCocktails;
 }
 
 void Machine::initAll() {
-    Pumps pump1(PUMP_PIN_1);
-    Pumps pump2(PUMP_PIN_2);
-    Pumps pump3(PUMP_PIN_3);
-    Pumps pump4(PUMP_PIN_4);
+    Pump pump1(PUMP_PIN_1);
+    Pump pump2(PUMP_PIN_2);
+    Pump pump3(PUMP_PIN_3);
+    Pump pump4(PUMP_PIN_4);
     pumps[0] = &pump1;
     pumps[1] = &pump2;
     pumps[2] = &pump3;
@@ -53,8 +53,10 @@ void Machine::initAll() {
 }
 
 void Machine::requestMixer(int i) {
-    //display that we need mixer #i??
-    //
+    int mixer_i = getBlynkSelection(&Mixers);
+    mixer_i %= NUMBER_MIXERS; //ensure its in range
+    Mixer mixer = static_cast<Mixer>(mixer_i); //eek found this on stack overflow. Don't know if this is good practice
+    pumps[i]->mixer = mixer;
 }
 
 
@@ -89,7 +91,7 @@ void Machine::run() {
             // OLED.display(availableCocktails[i])
 
             // if (cocktailSelected) {
-            //      currentCocktail = i;
+                //  currentCocktail = i;
             //      state = makeDrink;
             // }
             break;

@@ -7,9 +7,9 @@
 
 #define MILLISECONDS_PER_MILLILITER 100
 
-class Pumps {
+class Pump {
     public:
-    Pumps(int p);
+    Pump(int p);
     void resetPump();
     void pumpRun();
 

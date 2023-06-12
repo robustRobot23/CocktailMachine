@@ -2,7 +2,7 @@
 #define INGREDIENTS_H
 
 #define NUMBER_MIXERS 8
-
+#define NUMBER_LIQUORS 6
 enum Mixer {
     None,
     Tonic,
@@ -14,7 +14,7 @@ enum Mixer {
     RasberryCordial
 };
 
-static std::string Mixers[NUMBER_MIXERS] = {
+static String Mixers[NUMBER_MIXERS] = {
     "None",
     "Tonic",
     "Lemonade",
@@ -34,7 +34,7 @@ enum Liquor {
     Rum
 };
 
-static std::string Liquors[6] = {
+static String Liquors[NUMBER_LIQUORS] = {
     "None",
     "Gin",
     "Vodka",

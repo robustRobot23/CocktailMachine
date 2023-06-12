@@ -1,5 +1,7 @@
 #include <machine.hpp> 
 
+State state = selectMixers;
+
 /// @brief Initialises all cocktails
 void Machine::initCocktails() {
     Cocktail GnT("GnT", Gin, ONE_SHOT, Tonic, THREE_QUARTERS_CUP, None, 0, None, 0, None, 0);
@@ -42,6 +44,7 @@ void Machine::findAvailable() {
 }
 
 void Machine::initAll() {
+    //possible could start with a welcome state
     Pump pump1(PUMP_PIN_1);
     Pump pump2(PUMP_PIN_2);
     Pump pump3(PUMP_PIN_3);
@@ -50,55 +53,105 @@ void Machine::initAll() {
     pumps[1] = &pump2;
     pumps[2] = &pump3;
     pumps[3] = &pump4;
+
+    blynkInit();
 }
 
 void Machine::requestMixer(int i) {
-    int mixer_i = getBlynkSelection(&Mixers);
+    int mixer_i = getBlynkSelection();
     mixer_i %= NUMBER_MIXERS; //ensure its in range
     Mixer mixer = static_cast<Mixer>(mixer_i); //eek found this on stack overflow. Don't know if this is good practice
     pumps[i]->mixer = mixer;
 }
 
+void Machine::requestLiquor() {
+    int liquor_i = getBlynkSelection();
+    liquor = static_cast<Liquor>(liquor_i); //if nothing was selected, liquor = 0 = Empty, state will not change
+}
+
+bool Machine::getInitConfirmation() {
+    return blynkSelected;
+}
+
+bool Machine:: getCocktailConfirmation() {
+    return blynkSelected;
+}
+
+void Machine::blynkTerminalDisplay() {
+    switch(state) {
+        case selectMixers:
+            // String mixing = Mixers[blynkSelectedElement];
+            terminal.print("Current Mixer: ");
+            terminal.print(Mixers[blynkCurrentSelection]);
+            break;
+        case selectLiquor:
+            terminal.print("Current Liqour: ");
+            terminal.print(Liquors[blynkCurrentSelection]);
+            break;
+        case displayMenu:
+            terminal.print("Current Cocktail: ");
+            terminal.print(availableCocktails[blynkCurrentSelection]->name); 
+    }
+
+    terminal.println();
+    terminal.flush();
+}
 
 void Machine::run() {
+    Blynk.run();
     switch (state) {
-        case initIngredients:
-            //Definitely want to improve this state
-            // receive user input for ingredients
-            for (int i = 0; i < 4; i++) {
-                if (!pumps[i]->mixer) {
-                    //This line might change or be removed by an interupt
-                    requestMixer(i);
-                    break;
+        case selectMixers:
+            if (!pumps[pumpToInitialise]->mixer) {
+                requestMixer(pumpToInitialise);
+            } else {
+                pumpToInitialise++;
+                if (pumpToInitialise >= 4) {
+                    state = selectLiquor;
+                    blynkCurrentSelection = 0;
                 }
             }
+            break;
 
+        case selectLiquor:
             if (!liquor) {
-                //request liquor
-            } else { //all has been initialised
-                //create list of available pumps
-                // if (completeSelection()) {
-                //     
-                //     state = displayMenu;
-                // }
+                requestLiquor();
+            } else {
+                state = initIngredients;
+                blynkCurrentSelection = 0;
             }
 
             break;
 
+        case initIngredients:
+            if (!initConfirmation) {
+                initConfirmation = getInitConfirmation();
+            } else {
+                state = displayMenu;
+                blynkTerminalDisplay();
+
+            }
+            break;
+
         case displayMenu:
+            static int previousCocktailElement = 0;
+            if (previousCocktailElement != blynkCurrentSelection) {
+                blynkTerminalDisplay();
+            }
+            if (!cocktailSelected) {
+                cocktailSelected = getCocktailConfirmation();
+            } else {
+                state = makeDrink;
+                blynkCurrentSelection = 0;
+            }
 
-        //psuedocode ish
-            // OLED.display(availableCocktails[i])
-
-            // if (cocktailSelected) {
-                //  currentCocktail = i;
-            //      state = makeDrink;
-            // }
             break;
 
         case makeDrink:
             if (!stepperFinished) {
                 //run stepper for x amount of shots
+                stepperRun(*availableCocktails[currentCocktail]->shots);
+                stepperFinished = true;
+
             } else if (!pumpsFinished) {
                 pumpsFinished = true; //unless proven otherwise
                 for (int i = 0; i < 4; i++) {
@@ -108,12 +161,13 @@ void Machine::run() {
                     }
                 }
             } else {
-                state = enjoy;
+                // state = enjoy;
+                state = displayMenu;
             }
             break;
         // case enjoy:
         //     //display "enjoy drink"
-        //     //play with neopixel
+        //     //flash neopixels
         //     //Check loadcell for cup removal
         //     break;
 

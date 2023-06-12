@@ -7,6 +7,7 @@
 #include <Arduino.h>
 #include <myBlynk.hpp>
 #include <state.hpp>
+#include <stepper.hpp>
 
 #define TOTAL_NUMBER_COCKTAILS 3
 
@@ -34,6 +35,10 @@ class Machine {
     /// @brief Currently a filler method. 
     /// @param i The pump for which the mixer is being requested
     void requestMixer(int i);
+    void requestLiquor();
+    bool getInitConfirmation();
+    bool getCocktailConfirmation();
+    void blynkTerminalDisplay();
 
     /// @brief The main FSM of the machine. Calls all peripherals when needed
     void run();
@@ -44,6 +49,7 @@ class Machine {
     bool cocktailSelected;
 
     int numberAvailableCocktails;
+
     
     /// @brief The array of all cocktails in the world
     Cocktail allCocktails[TOTAL_NUMBER_COCKTAILS];
@@ -54,6 +60,9 @@ class Machine {
     /// @brief An array of pointers to the 4 Pump objects.
     /// Contains pump operation methods and pump status
     Pump* pumps[4];
+
+    int pumpToInitialise = 0;
+    bool initConfirmation = false;
 
     /// @brief The liqour in the machine
     Liquor liquor = Empty;

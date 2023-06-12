@@ -33,7 +33,7 @@ enum State {
 
 /// @brief Current state of the machine.
     /// Controls the FSM in Machine::run()
-State state;
+extern State state;
 
 
 #endif

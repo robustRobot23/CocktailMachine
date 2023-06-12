@@ -1,5 +1,7 @@
 #include <myBlynk.hpp>
 
+
+
 void blynkInit(){
       Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
 }
@@ -53,24 +55,6 @@ int getBlynkSelection() {
     }
 }
 
-void blynkTerminalDisplay(int x) {
-    switch(x) {
-        case 0:
-            // String mixing = Mixers[blynkSelectedElement];
-            terminal.print("Current Mixer: ");
-            terminal.print(Mixers[blynkSelectedElement]);
-            break;
-        case 1:
-            terminal.print("Current Liqour: ");
-            terminal.print(Liquors[blynkSelectedElement]);
-            break;
-        case 2:
-            terminal.print("Current Cocktail");
-            terminal.print(blynkSelectedElement); 
-    }
 
-    terminal.println();
-    terminal.flush();
-}
 
 

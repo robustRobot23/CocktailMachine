@@ -29,6 +29,7 @@ fp-info-cache
 *.csv
 
 Cocktail Machine Code/lib/Privite Lib
+Cocktail CAD
 
 .pio
 .vscode/.browse.c_cpp.db*

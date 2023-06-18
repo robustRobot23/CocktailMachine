@@ -1,5 +1,8 @@
 #include "loadCell.hpp"
 
+HX711 scale;
+
+
 //need to get a calibration value for set_scale()
 void loadCellInit() {
     scale.begin(LOAD_CELL_DATA_PIN, LOAD_CELL_CLOCK_PIN);
@@ -8,7 +11,7 @@ void loadCellInit() {
     Serial.println("Load Cell Init");
 }
 
-long weigh() {
+long loadCellWeigh() {
     scale.power_up();
 
     long reading;

@@ -5,9 +5,8 @@
 #include "pinDefinitions.hpp"
 #include "HX711.h"
 
-HX711 scale;
 
 void loadCellInit();
-long weigh();
+long loadCellWeigh();
 
 #endif

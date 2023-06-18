@@ -1,8 +1,9 @@
 #include <machine.hpp> 
 
 State state = selectMixers;
+// static WidgetTerminal terminal(V5);
 
-/// @brief Initialises all cocktails
+
 void Machine::initCocktails() {
     Cocktail GnT("GnT", Gin, ONE_SHOT, Tonic, THREE_QUARTERS_CUP, None, 0, None, 0, None, 0);
     Cocktail GinLemonade("Gin and Lemonade", Gin, TWO_SHOTS, Lemonade, HALF_CUP, None, 0, None, 0, None, 0);
@@ -11,6 +12,7 @@ void Machine::initCocktails() {
     allCocktails[0] = GnT;
     allCocktails[1] = GinLemonade;
     allCocktails[2] = RumCoke;
+    
 }
 
 bool Machine::cocktailAvailable(int i) {
@@ -33,14 +35,15 @@ bool Machine::cocktailAvailable(int i) {
 void Machine::findAvailable() {
 
     Cocktail *CurrentCocktail;
-    int numAvailableCocktails = 0;
+    // int numAvailableCocktails = 0;
     for (int i = 0; i < TOTAL_NUMBER_COCKTAILS; i++) {
         CurrentCocktail = &allCocktails[i];
         if (cocktailAvailable(i)){
-            availableCocktails[numAvailableCocktails++] = CurrentCocktail;
+            availableCocktails[numberAvailableCocktails] = CurrentCocktail;
+            numberAvailableCocktails++;
         }
     }
-    numberAvailableCocktails = numAvailableCocktails;
+    // numberAvailableCocktails = numAvailableCocktails;
 }
 
 void Machine::initAll() {
@@ -76,29 +79,46 @@ bool Machine::getInitConfirmation() {
 bool Machine:: getCocktailConfirmation() {
     return blynkSelected;
 }
-
-void Machine::blynkTerminalDisplay() {
+/// @brief Want to change name to displayMessage or something similar
+void Machine::terminalDisplay() {
     switch(state) {
         case selectMixers:
             // String mixing = Mixers[blynkSelectedElement];
-            terminal.print("Current Mixer: ");
-            terminal.print(Mixers[blynkCurrentSelection]);
+            blynkTerminalPrint("Mixer: ", Mixers[blynkCurrentSelection]);
+            // terminal.print("Mixer: ");
+            // terminal.print(Mixers[blynkCurrentSelection]);
             break;
         case selectLiquor:
-            terminal.print("Current Liqour: ");
-            terminal.print(Liquors[blynkCurrentSelection]);
+            blynkTerminalPrint("Liqour: ", Liquors[blynkCurrentSelection]);
+
+            // terminal.print("Liqour: ");
+            // terminal.print(Liquors[blynkCurrentSelection]);
             break;
         case displayMenu:
-            terminal.print("Current Cocktail: ");
-            terminal.print(availableCocktails[blynkCurrentSelection]->name); 
+            blynkTerminalPrint("Cocktail: ", availableCocktails[blynkCurrentSelection]->name);
+
+            // terminal.print("Cocktail: ");
+            // terminal.print(availableCocktails[blynkCurrentSelection]->name); 
     }
 
-    terminal.println();
-    terminal.flush();
+    // terminal.println();
+    // terminal.flush();
+}
+
+void Machine::resetDisplay() {
+    previousCocktailElement = 0;
+    blynkCurrentSelection = 0;
+    clearDisplay();
+    blynkTerminalPrint("Select Drink");
+}
+
+void Machine::clearDisplay() {
+    blynkClearDisplay();
+    
 }
 
 void Machine::run() {
-    Blynk.run();
+    runBlynk();
     switch (state) {
         case selectMixers:
             if (!pumps[pumpToInitialise]->mixer) {
@@ -127,21 +147,25 @@ void Machine::run() {
                 initConfirmation = getInitConfirmation();
             } else {
                 state = displayMenu;
-                blynkTerminalDisplay();
+                setNeopixelColour(ORANGE);
+                terminalDisplay();
+
 
             }
             break;
 
         case displayMenu:
-            static int previousCocktailElement = 0;
+            
             if (previousCocktailElement != blynkCurrentSelection) {
-                blynkTerminalDisplay();
+                previousCocktailElement = blynkCurrentSelection;
+                terminalDisplay();
             }
             if (!cocktailSelected) {
                 cocktailSelected = getCocktailConfirmation();
             } else {
                 state = makeDrink;
                 blynkCurrentSelection = 0;
+                setNeopixelColour(HOT_PINK);
             }
 
             break;
@@ -161,15 +185,33 @@ void Machine::run() {
                     }
                 }
             } else {
-                // state = enjoy;
-                state = displayMenu;
+                state = enjoy;
+                
             }
             break;
-        // case enjoy:
-        //     //display "enjoy drink"
-        //     //flash neopixels
-        //     //Check loadcell for cup removal
-        //     break;
+
+
+        case enjoy:
+            static long initialTime = millis();
+            static long currentTime = 0;
+
+            if (currentTime == 0) {
+                clearDisplay();
+                blynkTerminalPrint("Enjoy!");
+                initialTime = millis();
+                finalWeight = loadCellWeigh();
+                setNeopixelColour(GREEN);
+            }
+            if ((finalWeight - currentWeight >= 100)||currentTime - initialTime >= FIVE_SECONDS) {
+                currentTime = 0;
+                resetDisplay();
+                setNeopixelColour(ORANGE);
+                state = displayMenu;
+            }
+            currentTime = millis();
+
+    
+            break;
 
     }
 }

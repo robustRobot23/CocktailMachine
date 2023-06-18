@@ -8,9 +8,12 @@
 #include <myBlynk.hpp>
 #include <state.hpp>
 #include <stepper.hpp>
+#include <loadCell.hpp>
+#include <neopixel.hpp>
+
 
 #define TOTAL_NUMBER_COCKTAILS 3
-
+#define FIVE_SECONDS 5000
 
 
 
@@ -38,18 +41,22 @@ class Machine {
     void requestLiquor();
     bool getInitConfirmation();
     bool getCocktailConfirmation();
-    void blynkTerminalDisplay();
-
+    void terminalDisplay();
+    void resetDisplay();
+    void clearDisplay();
     /// @brief The main FSM of the machine. Calls all peripherals when needed
     void run();
 
     /// @brief The element of the current cocktail in the 'availabileCocktails' array
     int currentCocktail;
-
+    int previousCocktailElement = 0;
     bool cocktailSelected;
 
-    int numberAvailableCocktails;
+    // int numberAvailableCocktails;
 
+    long cupWeight = 0;
+    long currentWeight = 0;
+    long finalWeight = 0;
     
     /// @brief The array of all cocktails in the world
     Cocktail allCocktails[TOTAL_NUMBER_COCKTAILS];
@@ -75,7 +82,6 @@ class Machine {
     /// Reset before making new cocktail
     bool stepperFinished = false;
 
-    
 
 };
 

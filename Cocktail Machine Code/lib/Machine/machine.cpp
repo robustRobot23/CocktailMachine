@@ -1,7 +1,6 @@
 #include <machine.hpp> 
 
 State state = selectMixers;
-// static WidgetTerminal terminal(V5);
 
 
 void Machine::initCocktails() {
@@ -58,17 +57,30 @@ void Machine::initAll() {
     pumps[3] = &pump4;
 
     blynkInit();
+    neopixelInit();
+    loadCellInit();
+    stepperInit();
+    initCocktails();
+
 }
 
 void Machine::requestMixer(int i) {
-    int mixer_i = getBlynkSelection();
+
+    int mixer_i = blynkRequestMixer();
+    Serial.print("Request Mixer: ");
+    Serial.println(mixer_i);
+    if (mixer_i != 0) {
+        pumps[i]->gotMixer = true;
+    }
+
     mixer_i %= NUMBER_MIXERS; //ensure its in range
     Mixer mixer = static_cast<Mixer>(mixer_i); //eek found this on stack overflow. Don't know if this is good practice
     pumps[i]->mixer = mixer;
 }
 
 void Machine::requestLiquor() {
-    int liquor_i = getBlynkSelection();
+    int liquor_i = blynkRequestLiquor();
+    
     liquor = static_cast<Liquor>(liquor_i); //if nothing was selected, liquor = 0 = Empty, state will not change
 }
 
@@ -119,13 +131,26 @@ void Machine::clearDisplay() {
 
 void Machine::run() {
     runBlynk();
+    static State previousState = enjoy;
+    if (previousState != state) {
+        previousState = state;
+        Serial.print("Sate is: ");
+        Serial.println(state);
+    } 
     switch (state) {
         case selectMixers:
-            if (!pumps[pumpToInitialise]->mixer) {
+            if (!pumps[pumpToInitialise]->gotMixer) {
                 requestMixer(pumpToInitialise);
             } else {
+                blynkTerminalPrint("Success! ", String(pumpToInitialise));
                 pumpToInitialise++;
                 if (pumpToInitialise >= 4) {
+                    for (int i = 0; i < 4; i++) {
+                        Serial.print("Mixer ");
+                        Serial.print(i);
+                        Serial.print(" = ");
+                        Serial.println(pumps[i]->mixer);
+                    }
                     state = selectLiquor;
                     blynkCurrentSelection = 0;
                 }

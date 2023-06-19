@@ -100,4 +100,32 @@ void blynkClearDisplay() {
     terminal.clear();
 }
 
+int blynkRequestMixer() {
+    if (blynkCurrentSelection != blynkPreviousSelection) {
+        blynkPreviousSelection = blynkCurrentSelection;
+        blynkTerminalPrint("Current Mixer: ", Liquors[blynkCurrentSelection]);
+        
+    }
+    return getBlynkSelection();
 
+}
+
+int blynkRequestLiquor() {
+    if (blynkCurrentSelection != blynkPreviousSelection) {
+        blynkPreviousSelection = blynkCurrentSelection;
+        blynkTerminalPrint("Current Liquor: ", Liquors[blynkCurrentSelection]);
+
+    }
+    return getBlynkSelection();
+}
+
+// void blynkUpdateDisplay() {
+//     static State previousState = enjoy; //will not start in this state so the following if statement should always run
+//     if (state != previousState) {
+//         switch (state) {
+//             case selectMixers:
+//                 static Mixer previousMixer = None;
+//                 if ()
+//         }
+//     }
+// }

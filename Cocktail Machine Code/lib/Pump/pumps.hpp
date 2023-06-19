@@ -14,6 +14,7 @@ class Pump {
     void pumpRun();
 
     Mixer mixer = None;
+    bool gotMixer = false;
     int milliLitre = 0;
     bool finished = true;
 

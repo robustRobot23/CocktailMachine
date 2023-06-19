@@ -8,6 +8,7 @@
 
 
 static volatile int blynkCurrentSelection = 0;
+static volatile int blynkPreviousSelection = 1;
 static volatile bool blynkSelected = false;
 static volatile int blynkSelectedElement = 0;
 static volatile int blynkManualRGB;
@@ -19,6 +20,9 @@ int getBlynkSelection();
 void blynkTerminalPrint(String message, String value);
 void blynkTerminalPrint(String message);
 void blynkClearDisplay();
+
+int blynkRequestMixer();
+int blynkRequestLiquor();
 
 
 #endif

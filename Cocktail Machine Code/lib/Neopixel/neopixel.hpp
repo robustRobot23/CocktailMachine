@@ -8,6 +8,7 @@
 
 #define RED         0xFF0000
 #define GREEN       0x00FF00
+#define LIME        0x78E51A
 #define BLUE        0x0000FF
 #define ORANGE      0xFF6600
 #define YELLOW      0xFFFF00

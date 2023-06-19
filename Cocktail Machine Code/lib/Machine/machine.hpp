@@ -44,6 +44,7 @@ class Machine {
     void terminalDisplay();
     void resetDisplay();
     void clearDisplay();
+    void updateNeopixelColour();
     /// @brief The main FSM of the machine. Calls all peripherals when needed
     void run();
 

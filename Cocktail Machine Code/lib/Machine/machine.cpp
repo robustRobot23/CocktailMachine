@@ -74,7 +74,7 @@ void Machine::requestMixer(int i) {
     }
 
     mixer_i %= NUMBER_MIXERS; //ensure its in range
-    Mixer mixer = static_cast<Mixer>(mixer_i); //eek found this on stack overflow. Don't know if this is good practice
+    Mixer mixer = static_cast<Mixer>(mixer_i); //Found this on stack overflow. Don't know if this is good practice
     pumps[i]->mixer = mixer;
 }
 
@@ -93,28 +93,20 @@ bool Machine:: getCocktailConfirmation() {
 }
 /// @brief Want to change name to displayMessage or something similar
 void Machine::terminalDisplay() {
-    switch(state) {
-        case selectMixers:
-            // String mixing = Mixers[blynkSelectedElement];
-            blynkTerminalPrint("Mixer: ", Mixers[blynkCurrentSelection]);
-            // terminal.print("Mixer: ");
-            // terminal.print(Mixers[blynkCurrentSelection]);
-            break;
-        case selectLiquor:
-            blynkTerminalPrint("Liqour: ", Liquors[blynkCurrentSelection]);
-
-            // terminal.print("Liqour: ");
-            // terminal.print(Liquors[blynkCurrentSelection]);
-            break;
-        case displayMenu:
-            blynkTerminalPrint("Cocktail: ", availableCocktails[blynkCurrentSelection]->name);
-
-            // terminal.print("Cocktail: ");
-            // terminal.print(availableCocktails[blynkCurrentSelection]->name); 
+    if (blynkCurrentSelection != blynkPreviousSelection) {
+        blynkPreviousSelection = blynkCurrentSelection;
+        switch(state) {
+            case selectMixers:
+                blynkTerminalPrint("Mixer: ", Mixers[blynkCurrentSelection]);
+                break;
+            case selectLiquor:
+                blynkTerminalPrint("Liqour: ", Liquors[blynkCurrentSelection]);
+                break;
+            case displayMenu:
+                blynkTerminalPrint("Cocktail: ", availableCocktails[blynkCurrentSelection]->name);
+                break;
+        }
     }
-
-    // terminal.println();
-    // terminal.flush();
 }
 
 void Machine::resetDisplay() {
@@ -129,16 +121,47 @@ void Machine::clearDisplay() {
     
 }
 
+void Machine::updateNeopixelColour() {
+    switch (state) {
+        case selectMixers:
+            setNeopixelColour(ORANGE);
+            break;
+        case selectLiquor:
+            setNeopixelColour(BLUE);
+            break;
+        case initIngredients:
+            setNeopixelColour(LIME);
+            break;
+
+        case displayMenu:
+            setNeopixelColour(HOT_PINK);
+            break;
+        
+        case makeDrink:
+            setNeopixelColour(YELLOW);
+            break;
+        case enjoy:
+            setNeopixelColour(GREEN);
+            break;
+    }
+}
+
 void Machine::run() {
     runBlynk();
+    terminalDisplay();
+
+
     static State previousState = enjoy;
     if (previousState != state) {
         previousState = state;
         Serial.print("Sate is: ");
         Serial.println(state);
+        updateNeopixelColour();
     } 
+
     switch (state) {
         case selectMixers:
+
             if (!pumps[pumpToInitialise]->gotMixer) {
                 requestMixer(pumpToInitialise);
             } else {
@@ -172,7 +195,6 @@ void Machine::run() {
                 initConfirmation = getInitConfirmation();
             } else {
                 state = displayMenu;
-                setNeopixelColour(ORANGE);
                 terminalDisplay();
 
 
@@ -190,7 +212,6 @@ void Machine::run() {
             } else {
                 state = makeDrink;
                 blynkCurrentSelection = 0;
-                setNeopixelColour(HOT_PINK);
             }
 
             break;
@@ -217,6 +238,7 @@ void Machine::run() {
 
 
         case enjoy:
+            
             static long initialTime = millis();
             static long currentTime = 0;
 
@@ -225,7 +247,6 @@ void Machine::run() {
                 blynkTerminalPrint("Enjoy!");
                 initialTime = millis();
                 finalWeight = loadCellWeigh();
-                setNeopixelColour(GREEN);
             }
             if ((finalWeight - currentWeight >= 100)||currentTime - initialTime >= FIVE_SECONDS) {
                 currentTime = 0;

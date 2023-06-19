@@ -1,9 +1,6 @@
 #include "pumps.hpp"
 
-Pump pump1(PUMP_PIN_1);
-Pump pump2(PUMP_PIN_2);
-Pump pump3(PUMP_PIN_3);
-Pump pump4(PUMP_PIN_4);
+
 
 Pump::Pump(int p) {
     pin = p;
@@ -29,6 +26,10 @@ void Pump::pumpRun() {
 }
 
 void pumpsInit(Pump *pumps[]) {
+    static Pump pump1(PUMP_PIN_1);
+    static Pump pump2(PUMP_PIN_2);
+    static Pump pump3(PUMP_PIN_3);
+    static Pump pump4(PUMP_PIN_4);
     pumps[0] = &pump1;
     pumps[1] = &pump2;
     pumps[2] = &pump3;

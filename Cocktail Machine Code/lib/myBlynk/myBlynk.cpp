@@ -1,6 +1,9 @@
 #include <myBlynk.hpp>
+#include <WiFi.h>
+#include <WiFiClient.h>
+#include <BlynkSimpleEsp32.h>
 
-static WidgetTerminal terminal(V5);
+WidgetTerminal terminal(V5);
 
 
 void blynkInit(){

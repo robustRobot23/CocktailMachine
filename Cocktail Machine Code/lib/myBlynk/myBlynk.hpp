@@ -2,10 +2,6 @@
 #define MY_BLYNK_H
 
 #include <Arduino.h>
-#include <WiFi.h>
-#include <WiFiClient.h>
-#include <BlynkSimpleEsp32.h>
-
 #include <privateInfo.hpp>
 #include <state.hpp>
 #include <ingredients.hpp>

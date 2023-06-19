@@ -4,13 +4,14 @@ State state = selectMixers;
 
 
 void Machine::initCocktails() {
-    Cocktail GnT("GnT", Gin, ONE_SHOT, Tonic, THREE_QUARTERS_CUP, None, 0, None, 0, None, 0);
-    Cocktail GinLemonade("Gin and Lemonade", Gin, TWO_SHOTS, Lemonade, HALF_CUP, None, 0, None, 0, None, 0);
-    Cocktail RumCoke("Rum and Coke", Rum, ONE_SHOT, Coke, THREE_QUARTERS_CUP, None, 0, None, 0, None, 0);
+    static Cocktail GnT("GnT", Gin, ONE_SHOT, Tonic, THREE_QUARTERS_CUP, None, 0, None, 0, None, 0);
+    static Cocktail GinLemonade("Gin and Lemonade", Gin, TWO_SHOTS, Lemonade, HALF_CUP, None, 0, None, 0, None, 0);
+    static Cocktail RumCoke("Rum and Coke", Rum, ONE_SHOT, Coke, THREE_QUARTERS_CUP, None, 0, None, 0, None, 0);
+    static Cocktail VodkaOG("Vodka and OJ", Vodka, TWO_SHOTS, OrangeJ, THREE_QUARTERS_CUP, None, 0, None, 0, None, 0);
+    allCocktails[0] = &GnT;
+    allCocktails[1] = &GinLemonade;
+    allCocktails[2] = &RumCoke;
 
-    allCocktails[0] = GnT;
-    allCocktails[1] = GinLemonade;
-    allCocktails[2] = RumCoke;
     
 }
 
@@ -36,56 +37,51 @@ void Machine::findAvailable() {
     Cocktail *CurrentCocktail;
     // int numAvailableCocktails = 0;
     for (int i = 0; i < TOTAL_NUMBER_COCKTAILS; i++) {
-        CurrentCocktail = &allCocktails[i];
+        CurrentCocktail = allCocktails[i];
         if (cocktailAvailable(i)){
             availableCocktails[numberAvailableCocktails] = CurrentCocktail;
             numberAvailableCocktails++;
         }
+    }
+    if (numberAvailableCocktails == 0) {
+        blynkTerminalPrint("No cocktails can be made, try again");
+        state = selectMixers;
     }
     // numberAvailableCocktails = numAvailableCocktails;
 }
 
 void Machine::initAll() {
     //possible could start with a welcome state
-    Pump pump1(PUMP_PIN_1);
-    Pump pump2(PUMP_PIN_2);
-    Pump pump3(PUMP_PIN_3);
-    Pump pump4(PUMP_PIN_4);
-    pumps[0] = &pump1;
-    pumps[1] = &pump2;
-    pumps[2] = &pump3;
-    pumps[3] = &pump4;
-
+    pumpsInit(pumps);
     blynkInit();
     neopixelInit();
     loadCellInit();
     stepperInit();
     initCocktails();
-
+    clearDisplay();
 }
 
-void Machine::requestMixer(int i) {
+bool Machine::requestMixer(int currentPump) {
 
     int mixer_i = blynkRequestMixer();
-    Serial.print("Request Mixer: ");
-    Serial.println(mixer_i);
-    if (mixer_i != 0) {
-        pumps[i]->gotMixer = true;
+    bool selected = true;
+    if (mixer_i == 0) {
+        // pumps[currentPump]->gotMixer = true;
+        selected = false;
     }
-
     mixer_i %= NUMBER_MIXERS; //ensure its in range
     Mixer mixer = static_cast<Mixer>(mixer_i); //Found this on stack overflow. Don't know if this is good practice
-    pumps[i]->mixer = mixer;
+    pumps[currentPump]->mixer = mixer;
+    return selected;
 }
 
 void Machine::requestLiquor() {
     int liquor_i = blynkRequestLiquor();
-    
     liquor = static_cast<Liquor>(liquor_i); //if nothing was selected, liquor = 0 = Empty, state will not change
 }
 
 bool Machine::getInitConfirmation() {
-    return blynkSelected;
+    return blynkSelectedConfirmation();
 }
 
 bool Machine:: getCocktailConfirmation() {
@@ -93,17 +89,17 @@ bool Machine:: getCocktailConfirmation() {
 }
 /// @brief Want to change name to displayMessage or something similar
 void Machine::terminalDisplay() {
-    if (blynkCurrentSelection != blynkPreviousSelection) {
-        blynkPreviousSelection = blynkCurrentSelection;
+    if (currentSelection != previousSelection) {
+        previousSelection = currentSelection;
         switch(state) {
             case selectMixers:
-                blynkTerminalPrint("Mixer: ", Mixers[blynkCurrentSelection]);
+                blynkTerminalPrint("Mixer: ", Mixers[currentSelection]);
                 break;
             case selectLiquor:
-                blynkTerminalPrint("Liqour: ", Liquors[blynkCurrentSelection]);
+                blynkTerminalPrint("Liqour: ", Liquors[currentSelection]);
                 break;
             case displayMenu:
-                blynkTerminalPrint("Cocktail: ", availableCocktails[blynkCurrentSelection]->name);
+                blynkTerminalPrint("Cocktail: ", availableCocktails[currentSelection]->name);
                 break;
         }
     }
@@ -111,7 +107,7 @@ void Machine::terminalDisplay() {
 
 void Machine::resetDisplay() {
     previousCocktailElement = 0;
-    blynkCurrentSelection = 0;
+    currentSelection = 0;
     clearDisplay();
     blynkTerminalPrint("Select Drink");
 }
@@ -148,8 +144,16 @@ void Machine::updateNeopixelColour() {
 
 void Machine::run() {
     runBlynk();
+    currentSelection = getBlynkCurrentSelection();
+    static int ticks = 0;
+    if (ticks >= 50000) {
+        ticks = 0;
+        Serial.print("currentSelection: ");
+        Serial.println(currentSelection);
+    }
+    ticks++;
     terminalDisplay();
-
+    
 
     static State previousState = enjoy;
     if (previousState != state) {
@@ -160,12 +164,17 @@ void Machine::run() {
     } 
 
     switch (state) {
+        /// Yellow status
+        
         case selectMixers:
-
-            if (!pumps[pumpToInitialise]->gotMixer) {
-                requestMixer(pumpToInitialise);
+        static bool selectedMixer = false;
+            // if (!pumps[pumpToInitialise]->gotMixer) {
+            if (!selectedMixer) {
+                selectedMixer = requestMixer(pumpToInitialise);
             } else {
-                blynkTerminalPrint("Success! ", String(pumpToInitialise));
+                selectedMixer = false;
+                currentSelection = 0;
+                blynkTerminalPrint("Selected: ", Mixers[pumps[pumpToInitialise]->mixer]);
                 pumpToInitialise++;
                 if (pumpToInitialise >= 4) {
                     for (int i = 0; i < 4; i++) {
@@ -175,43 +184,55 @@ void Machine::run() {
                         Serial.println(pumps[i]->mixer);
                     }
                     state = selectLiquor;
-                    blynkCurrentSelection = 0;
+                    currentSelection = 0;
                 }
             }
             break;
 
+        /// Blue status 
         case selectLiquor:
             if (!liquor) {
                 requestLiquor();
             } else {
                 state = initIngredients;
-                blynkCurrentSelection = 0;
+                clearDisplay();
+                blynkTerminalPrint("Selected Ingredients: ");
+                if (liquor >= 0 && liquor < NUMBER_LIQUORS) {
+                    blynkTerminalPrint("Liquor: ", Liquors[liquor]);
+                } else {
+                    blynkTerminalPrint("Invalid Liquor: ", String(liquor));
+                }
+                for (int i = 0; i < 4; i++) {
+                    if (pumps[i]->mixer >= 0 && pumps[i]->mixer <NUMBER_MIXERS) {
+                        blynkTerminalPrint("Mixer: ", Mixers[pumps[i]->mixer]);
+                    } else {
+                        blynkTerminalPrint("Invalid mixer: ", String(pumps[i]->mixer));
+                    }
+                }
+                blynkTerminalPrint("Ready to proceed?");
+                currentSelection = 0;
             }
 
             break;
 
+        // Lime status
         case initIngredients:
             if (!initConfirmation) {
                 initConfirmation = getInitConfirmation();
             } else {
                 state = displayMenu;
-                terminalDisplay();
-
-
+                previousSelection = 1;
+                currentSelection = 0;
+                clearDisplay();
             }
             break;
 
         case displayMenu:
-            
-            if (previousCocktailElement != blynkCurrentSelection) {
-                previousCocktailElement = blynkCurrentSelection;
-                terminalDisplay();
-            }
             if (!cocktailSelected) {
                 cocktailSelected = getCocktailConfirmation();
             } else {
                 state = makeDrink;
-                blynkCurrentSelection = 0;
+                currentSelection = 0;
             }
 
             break;
@@ -235,8 +256,6 @@ void Machine::run() {
                 
             }
             break;
-
-
         case enjoy:
             
             static long initialTime = millis();
@@ -255,9 +274,6 @@ void Machine::run() {
                 state = displayMenu;
             }
             currentTime = millis();
-
-    
             break;
-
     }
 }

@@ -37,7 +37,7 @@ class Machine {
 
     /// @brief Currently a filler method. 
     /// @param i The pump for which the mixer is being requested
-    void requestMixer(int i);
+    bool requestMixer(int i);
     void requestLiquor();
     bool getInitConfirmation();
     bool getCocktailConfirmation();
@@ -53,6 +53,8 @@ class Machine {
     int previousCocktailElement = 0;
     bool cocktailSelected;
 
+    int currentSelection = 0;
+    int previousSelection = 1;
     // int numberAvailableCocktails;
 
     long cupWeight = 0;
@@ -60,7 +62,7 @@ class Machine {
     long finalWeight = 0;
     
     /// @brief The array of all cocktails in the world
-    Cocktail allCocktails[TOTAL_NUMBER_COCKTAILS];
+    Cocktail *allCocktails[TOTAL_NUMBER_COCKTAILS];
 
     /// @brief The array of the cocktails the machine can currently make
     Cocktail* availableCocktails[TOTAL_NUMBER_COCKTAILS];

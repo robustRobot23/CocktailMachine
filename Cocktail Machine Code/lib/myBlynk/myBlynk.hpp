@@ -6,17 +6,20 @@
 #include <state.hpp>
 #include <ingredients.hpp>
 
-
-static volatile int blynkCurrentSelection = 0;
-static volatile int blynkPreviousSelection = 1;
-static volatile bool blynkSelected = false;
-static volatile int blynkSelectedElement = 0;
-static volatile int blynkManualRGB;
-static volatile int numberAvailableCocktails = 0;
+static int blynkCurrentSelection = 0;
+static int blynkPreviousSelection = 1;
+static bool blynkSelected = false;
+static int blynkSelectedElement = 0;
+static int blynkManualRGB;
+static int numberAvailableCocktails = 0;
 
 void blynkInit();
 void runBlynk();
+
 int getBlynkSelection();
+bool blynkSelectedConfirmation();
+int getBlynkCurrentSelection();
+
 void blynkTerminalPrint(String message, String value);
 void blynkTerminalPrint(String message);
 void blynkClearDisplay();

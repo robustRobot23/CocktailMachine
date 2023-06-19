@@ -15,7 +15,7 @@
 #define TOTAL_NUMBER_COCKTAILS 3
 #define FIVE_SECONDS 5000
 
-
+#define COOL 2
 
 /// @brief Class that controls the machines state and drink making
 class Machine {

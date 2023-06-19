@@ -25,6 +25,6 @@ class Pump {
     long int pumpDuration = 0;
 };
 
-
+void pumpsInit(Pump *pumps[]);
 
 #endif

@@ -18,11 +18,12 @@ class Cocktail {
     // Initialise the cocktails ingredients when the class is created
     Cocktail(String n, Liquor l, int s, Mixer m1, int mL1, Mixer m2, int mL2, Mixer m3, int mL3, Mixer m4, int mL4);
     Cocktail();
-    Liquor liquors[1];
-    int shots[1];
+    Liquor liquor;
     String name;
     Mixer mixers[4];
     int mixerVolumes[4];
+    int shots[1];
+
 };
 
 #endif  

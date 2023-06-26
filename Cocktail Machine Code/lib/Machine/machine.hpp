@@ -12,10 +12,9 @@
 #include <neopixel.hpp>
 
 
-#define TOTAL_NUMBER_COCKTAILS 3
+#define TOTAL_NUMBER_COCKTAILS 4
 #define FIVE_SECONDS 5000
 
-#define COOL 2
 
 /// @brief Class that controls the machines state and drink making
 class Machine {
@@ -35,9 +34,7 @@ class Machine {
     /// @return Cocktail available bool
     bool cocktailAvailable(int i);
 
-    /// @brief Currently a filler method. 
-    /// @param i The pump for which the mixer is being requested
-    bool requestMixer(int i);
+    bool requestMixer();
     void requestLiquor();
     bool getInitConfirmation();
     bool getCocktailConfirmation();
@@ -45,6 +42,7 @@ class Machine {
     void resetDisplay();
     void clearDisplay();
     void updateNeopixelColour();
+    
     /// @brief The main FSM of the machine. Calls all peripherals when needed
     void run();
 
@@ -53,6 +51,7 @@ class Machine {
     int previousCocktailElement = 0;
     bool cocktailSelected;
 
+    int numberAvailableCocktails = 0;
     int currentSelection = 0;
     int previousSelection = 1;
     // int numberAvailableCocktails;

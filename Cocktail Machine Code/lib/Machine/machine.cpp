@@ -11,25 +11,48 @@ void Machine::initCocktails() {
     allCocktails[0] = &GnT;
     allCocktails[1] = &GinLemonade;
     allCocktails[2] = &RumCoke;
-
-    
+    allCocktails[3] = &VodkaOG;
+    //Remember to update TOTAL_NUMBER_COCKTAILS
 }
 
 bool Machine::cocktailAvailable(int i) {
-    Cocktail *cocktail = availableCocktails[i];
-    bool available;
-    for (int m = 0; m < 4; m++){
-        available = false;
-        for (int possibleMixer = 0; possibleMixer < NUMBER_MIXERS; possibleMixer++)
-            if (cocktail->mixers[m] == possibleMixer) {
-                available = true;
-                break;
+    Cocktail *cocktail = allCocktails[i];
+
+    Serial.print(cocktail->name);
+    Serial.print(": ");
+
+    bool returnVal = true; 
+
+    if (cocktail->liquor != liquor) {
+        Serial.println(Liquors[liquor]);
+        Serial.print(" != ");
+        Serial.println(Liquors[cocktail->liquor]);
+        returnVal = false;
+
+    } else {
+        Serial.println(Liquors[liquor]);
+        Serial.print(" == ");
+        Serial.println(Liquors[cocktail->liquor]);
+        for (int m = 0; m < 4; m++){ //for all the mixers in the cocktail
+            if (cocktail->mixers[m]) { // if the mixer isn't 'none'
+                bool available = false;
+                for (int possibleMixer = 0; possibleMixer < NUMBER_MIXERS; possibleMixer++)
+                    if (cocktail->mixers[m] == possibleMixer) {
+                        Serial.print("m = ");
+                        Serial.print(m);
+                        Serial.print(": ");
+                        Serial.println(Mixers[possibleMixer]);
+                        available = true;
+                        break;
+                    }
+                if (!available) {
+                    Serial.println("Mixer not availible");
+                    returnVal = false;
+                }
             }
-        if (!available) {
-            break;
         }
     }
-    return available;
+    return returnVal;
 }
 
 void Machine::findAvailable() {
@@ -37,12 +60,12 @@ void Machine::findAvailable() {
     Cocktail *CurrentCocktail;
     // int numAvailableCocktails = 0;
     for (int i = 0; i < TOTAL_NUMBER_COCKTAILS; i++) {
-        CurrentCocktail = allCocktails[i];
         if (cocktailAvailable(i)){
-            availableCocktails[numberAvailableCocktails] = CurrentCocktail;
+            availableCocktails[numberAvailableCocktails] = allCocktails[i];
             numberAvailableCocktails++;
         }
     }
+    setBlynkAvailableCocktails(numberAvailableCocktails);
     if (numberAvailableCocktails == 0) {
         blynkTerminalPrint("No cocktails can be made, try again");
         state = selectMixers;
@@ -61,17 +84,18 @@ void Machine::initAll() {
     clearDisplay();
 }
 
-bool Machine::requestMixer(int currentPump) {
+bool Machine::requestMixer() {
 
     int mixer_i = blynkRequestMixer();
     bool selected = true;
     if (mixer_i == 0) {
-        // pumps[currentPump]->gotMixer = true;
         selected = false;
+    }  else {
+        mixer_i %= NUMBER_MIXERS; //ensure its in range
+        Mixer mixer = static_cast<Mixer>(mixer_i); //Found this on stack overflow. Don't know if this is good practice
+        pumps[pumpToInitialise]->mixer = mixer;
     }
-    mixer_i %= NUMBER_MIXERS; //ensure its in range
-    Mixer mixer = static_cast<Mixer>(mixer_i); //Found this on stack overflow. Don't know if this is good practice
-    pumps[currentPump]->mixer = mixer;
+    
     return selected;
 }
 
@@ -85,7 +109,7 @@ bool Machine::getInitConfirmation() {
 }
 
 bool Machine:: getCocktailConfirmation() {
-    return blynkSelected;
+    return blynkSelectedConfirmation();
 }
 /// @brief Want to change name to displayMessage or something similar
 void Machine::terminalDisplay() {
@@ -145,17 +169,18 @@ void Machine::updateNeopixelColour() {
 void Machine::run() {
     runBlynk();
     currentSelection = getBlynkCurrentSelection();
-    static int ticks = 0;
-    if (ticks >= 50000) {
-        ticks = 0;
-        Serial.print("currentSelection: ");
-        Serial.println(currentSelection);
-    }
-    ticks++;
+    // static int ticks = 0;
+    // if (ticks >= 50000) {
+    //     ticks = 0;
+    //     Serial.print("currentSelection: ");
+    //     Serial.println(currentSelection);
+    // }
+    // ticks++;
     terminalDisplay();
     
 
     static State previousState = enjoy;
+
     if (previousState != state) {
         previousState = state;
         Serial.print("Sate is: ");
@@ -164,16 +189,16 @@ void Machine::run() {
     } 
 
     switch (state) {
+
         /// Yellow status
-        
         case selectMixers:
-        static bool selectedMixer = false;
-            // if (!pumps[pumpToInitialise]->gotMixer) {
+            static bool selectedMixer = false;
+
             if (!selectedMixer) {
-                selectedMixer = requestMixer(pumpToInitialise);
+                selectedMixer = requestMixer();
             } else {
                 selectedMixer = false;
-                currentSelection = 0;
+                // currentSelection = 0;
                 blynkTerminalPrint("Selected: ", Mixers[pumps[pumpToInitialise]->mixer]);
                 pumpToInitialise++;
                 if (pumpToInitialise >= 4) {
@@ -182,7 +207,7 @@ void Machine::run() {
                         Serial.print(i);
                         Serial.print(" = ");
                         Serial.println(pumps[i]->mixer);
-                    }
+                    }      
                     state = selectLiquor;
                     currentSelection = 0;
                 }
@@ -220,6 +245,7 @@ void Machine::run() {
             if (!initConfirmation) {
                 initConfirmation = getInitConfirmation();
             } else {
+                findAvailable();
                 state = displayMenu;
                 previousSelection = 1;
                 currentSelection = 0;
@@ -267,7 +293,7 @@ void Machine::run() {
                 initialTime = millis();
                 finalWeight = loadCellWeigh();
             }
-            if ((finalWeight - currentWeight >= 100)||currentTime - initialTime >= FIVE_SECONDS) {
+            if ((finalWeight - loadCellWeigh() >= 100) || (currentTime - initialTime) >= FIVE_SECONDS) {
                 currentTime = 0;
                 resetDisplay();
                 setNeopixelColour(ORANGE);

@@ -3,7 +3,7 @@
 Cocktail::Cocktail(String n, Liquor l, int s, Mixer m1, int mL1, Mixer m2, int mL2, Mixer m3, int mL3, Mixer m4, int mL4) {
     name = n;
     
-    liquors[0] = l;
+    liquor = l;
     shots[0] = s;
 
     mixers[0] = m1;

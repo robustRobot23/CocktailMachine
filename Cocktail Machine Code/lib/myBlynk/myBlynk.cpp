@@ -36,7 +36,7 @@ BLYNK_WRITE(V2) {
         
         case displayMenu:
             if (blynkCurrentSelection < 0) {
-                blynkCurrentSelection = numberAvailableCocktails; 
+                blynkCurrentSelection = blynkNumberAvailableCocktails - 1; 
             }
             break;
     }
@@ -61,7 +61,7 @@ BLYNK_WRITE(V3) {
             break;
         
         case displayMenu:
-            if (blynkCurrentSelection >= numberAvailableCocktails) {
+            if (blynkCurrentSelection >= blynkNumberAvailableCocktails) {
                 blynkCurrentSelection = 0;
             }
             break;
@@ -79,6 +79,10 @@ BLYNK_WRITE(V4) {
 BLYNK_WRITE(V5) {
 
     ///Currently do nothing with terminal messages. No plans to change this
+}
+
+void setBlynkAvailableCocktails(int n) {
+    blynkNumberAvailableCocktails = n;
 }
 
 int getBlynkSelection() {
@@ -129,14 +133,3 @@ int blynkRequestMixer() {
 int blynkRequestLiquor() {
     return getBlynkSelection();
 }
-
-// void blynkUpdateDisplay() {
-//     static State previousState = enjoy; //will not start in this state so the following if statement should always run
-//     if (state != previousState) {
-//         switch (state) {
-//             case selectMixers:
-//                 static Mixer previousMixer = None;
-//                 if ()
-//         }
-//     }
-// }

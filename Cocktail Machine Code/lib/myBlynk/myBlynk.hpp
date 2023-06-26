@@ -11,14 +11,16 @@ static int blynkPreviousSelection = 1;
 static bool blynkSelected = false;
 static int blynkSelectedElement = 0;
 static int blynkManualRGB;
-static int numberAvailableCocktails = 0;
+static int blynkNumberAvailableCocktails = 0;
 
 void blynkInit();
 void runBlynk();
 
+void setBlynkAvailableCocktails(int n);
 int getBlynkSelection();
 bool blynkSelectedConfirmation();
 int getBlynkCurrentSelection();
+
 
 void blynkTerminalPrint(String message, String value);
 void blynkTerminalPrint(String message);

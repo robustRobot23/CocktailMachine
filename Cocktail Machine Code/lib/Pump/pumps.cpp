@@ -35,3 +35,14 @@ void pumpsInit(Pump *pumps[]) {
     pumps[2] = &pump3;
     pumps[3] = &pump4;
 }
+
+bool pumpsRun(Pump *pumps[4]) {
+    bool pumpsFinished = true;
+    for (int i = 0; i < 4; i++) {
+        if (!pumps[i]->finished) {
+            pumpsFinished = false;
+            pumps[i]->pumpRun();
+        }
+    }
+    return pumpsFinished;
+}

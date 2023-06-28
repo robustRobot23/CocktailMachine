@@ -11,7 +11,6 @@
 #include <loadCell.hpp>
 #include <neopixel.hpp>
 
-
 #define TOTAL_NUMBER_COCKTAILS 4
 #define FIVE_SECONDS 5000
 
@@ -42,7 +41,7 @@ class Machine {
     void resetDisplay();
     void clearDisplay();
     void updateNeopixelColour();
-    
+    void resetMachine();
     /// @brief The main FSM of the machine. Calls all peripherals when needed
     void run();
 
@@ -83,7 +82,6 @@ class Machine {
     /// @brief Flag raised when stepper motor has finished dispensing liquor.
     /// Reset before making new cocktail
     bool stepperFinished = false;
-
 
 };
 

@@ -5,6 +5,8 @@
 #include "pinDefinitions.hpp"
 #include "ingredients.hpp"
 
+
+
 #define MILLISECONDS_PER_MILLILITER 100
 
 class Pump {
@@ -28,3 +30,5 @@ class Pump {
 void pumpsInit(Pump *pumps[]);
 
 #endif
+
+bool pumpsRun(Pump* pumps[4]);

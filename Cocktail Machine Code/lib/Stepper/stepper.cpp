@@ -26,11 +26,8 @@ void stepperRun(int shots) {
   for (int i = 0; i < shots; i++)
   {
     stepper.rotate(DEGREES_PER_SHOT);
-
-    // would like to remove the delay function if possible
-    delay(500);
+    delay(500);                     // would like to remove the delay function if possible
     stepper.rotate(-DEGREES_PER_SHOT);
     delay(100);
   }
-  
 }

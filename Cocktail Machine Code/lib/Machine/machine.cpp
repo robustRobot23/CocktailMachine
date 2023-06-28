@@ -3,6 +3,8 @@
 State state = selectMixers;
 
 
+
+
 void Machine::initCocktails() {
     static Cocktail GnT("GnT", Gin, ONE_SHOT, Tonic, THREE_QUARTERS_CUP, None, 0, None, 0, None, 0);
     static Cocktail GinLemonade("Gin and Lemonade", Gin, TWO_SHOTS, Lemonade, HALF_CUP, None, 0, None, 0, None, 0);
@@ -166,6 +168,18 @@ void Machine::updateNeopixelColour() {
     }
 }
 
+void Machine::resetMachine() {
+    stepperFinished = false;
+    
+    for (int i = 0; i < 4; i++) {
+        pumps[i]->finished = false;
+    }
+
+    resetDisplay();
+
+}
+
+
 void Machine::run() {
     runBlynk();
     currentSelection = getBlynkCurrentSelection();
@@ -265,23 +279,16 @@ void Machine::run() {
 
         case makeDrink:
             if (!stepperFinished) {
-                //run stepper for x amount of shots
-                stepperRun(*availableCocktails[currentCocktail]->shots);
+                int numberShots = *availableCocktails[currentCocktail]->shots;
+                stepperRun(numberShots);
                 stepperFinished = true;
-
             } else if (!pumpsFinished) {
-                pumpsFinished = true; //unless proven otherwise
-                for (int i = 0; i < 4; i++) {
-                    if (!pumps[i]->finished) {
-                        pumpsFinished = false;
-                        pumps[i]->pumpRun();
-                    }
-                }
+                pumpsFinished = pumpsRun(pumps);  
             } else {
-                state = enjoy;
-                
+                state = enjoy;  
             }
             break;
+
         case enjoy:
             
             static long initialTime = millis();
@@ -295,8 +302,7 @@ void Machine::run() {
             }
             if ((finalWeight - loadCellWeigh() >= 100) || (currentTime - initialTime) >= FIVE_SECONDS) {
                 currentTime = 0;
-                resetDisplay();
-                setNeopixelColour(ORANGE);
+                resetMachine();
                 state = displayMenu;
             }
             currentTime = millis();

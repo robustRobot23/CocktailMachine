@@ -1,9 +1,7 @@
 #include <machine.hpp> 
 
 State state = selectMixers;
-
-
-
+State previousState = enjoy;
 
 void Machine::initCocktails() {
     static Cocktail GnT("GnT", Gin, ONE_SHOT, Tonic, THREE_QUARTERS_CUP, None, 0, None, 0, None, 0);
@@ -14,65 +12,93 @@ void Machine::initCocktails() {
     allCocktails[1] = &GinLemonade;
     allCocktails[2] = &RumCoke;
     allCocktails[3] = &VodkaOG;
-    //Remember to update TOTAL_NUMBER_COCKTAILS
+    //Remember to update TOTAL_NUMBER_COCKTAILS when adding a cocktail
 }
+
+bool Machine::mixerInPumps(Mixer mixer) {
+    bool mixerIsInPumps = false;
+    for (int i = 0; i<4; i++) {
+        if (mixer == pumps[i]->mixer) {
+            mixerIsInPumps = true;
+            Serial.print("Mixer: ");
+            Serial.print(mixer);
+            Serial.println(" ");
+        }
+    }
+    return mixerIsInPumps;
+}
+
+
+bool Machine::mixerAvailable(int i) {
+    Cocktail *cocktail = allCocktails[i];
+    int noneCount = 0;
+    // Goes through each mixer in the cocktail, and checks if it corresponds to a mixer in the pump
+    for (int m = 0; m<4; m++) {
+        if (cocktail->mixers[m] != None) {
+            if(!mixerInPumps(cocktail->mixers[m])) {
+                Serial.print(Mixers[m]);
+                Serial.println(" not available");
+                return false;
+            }        
+        } else {
+            noneCount++;
+        }
+        Serial.print(Mixers[m]);
+        Serial.println(" available");
+    }
+    if (noneCount >= 4) {
+        Serial.println("No mixers in cocktail");
+    }
+    return true;
+    
+}
+
+bool Machine::liquorAvailable(int i) {
+    Cocktail *cocktail = allCocktails[i];
+    if (cocktail->liquor == liquor) {
+        Serial.print("Liquor: ");
+        Serial.print(liquor);
+        Serial.println(" ");
+        return true;
+    } 
+    Serial.println("Liquor not available");
+    return false;
+}
+
 
 bool Machine::cocktailAvailable(int i) {
     Cocktail *cocktail = allCocktails[i];
-
     Serial.print(cocktail->name);
-    Serial.print(": ");
+    Serial.println(":");
 
-    bool returnVal = true; 
-
-    if (cocktail->liquor != liquor) {
-        Serial.println(Liquors[liquor]);
-        Serial.print(" != ");
-        Serial.println(Liquors[cocktail->liquor]);
-        returnVal = false;
-
-    } else {
-        Serial.println(Liquors[liquor]);
-        Serial.print(" == ");
-        Serial.println(Liquors[cocktail->liquor]);
-        for (int m = 0; m < 4; m++){ //for all the mixers in the cocktail
-            if (cocktail->mixers[m]) { // if the mixer isn't 'none'
-                bool available = false;
-                for (int possibleMixer = 0; possibleMixer < NUMBER_MIXERS; possibleMixer++)
-                    if (cocktail->mixers[m] == possibleMixer) {
-                        Serial.print("m = ");
-                        Serial.print(m);
-                        Serial.print(": ");
-                        Serial.println(Mixers[possibleMixer]);
-                        available = true;
-                        break;
-                    }
-                if (!available) {
-                    Serial.println("Mixer not availible");
-                    returnVal = false;
-                }
-            }
-        }
+    if (!liquorAvailable(i) || !mixerAvailable(i)) {
+        return false;
     }
-    return returnVal;
+    return true;    
 }
 
-void Machine::findAvailable() {
+bool Machine::cocktailInitSuccess() {
+    if (numberAvailableCocktails == 0) {
+        blynkTerminalPrint("No cocktails can be made, try again");
+        Serial.println("No cocktails can be made, try again");
+        return false;
+    } else if (numberAvailableCocktails > TOTAL_NUMBER_COCKTAILS) {
+        setNeopixelColour(RED);
+        blynkTerminalPrint("Error: numberAvailableCocktails greater than max");
+        Serial.println("Error: numberAvailableCocktails greater than max");
+        return false;
+    }
+    return true;
+}
 
-    Cocktail *CurrentCocktail;
-    // int numAvailableCocktails = 0;
+void Machine::findAvailableCocktails() {
     for (int i = 0; i < TOTAL_NUMBER_COCKTAILS; i++) {
         if (cocktailAvailable(i)){
             availableCocktails[numberAvailableCocktails] = allCocktails[i];
             numberAvailableCocktails++;
         }
     }
-    setBlynkAvailableCocktails(numberAvailableCocktails);
-    if (numberAvailableCocktails == 0) {
-        blynkTerminalPrint("No cocktails can be made, try again");
-        state = selectMixers;
-    }
-    // numberAvailableCocktails = numAvailableCocktails;
+    setBlynkAvailableCocktails(numberAvailableCocktails);    
 }
 
 void Machine::initAll() {
@@ -170,7 +196,7 @@ void Machine::updateNeopixelColour() {
 
 void Machine::resetMachine() {
     stepperFinished = false;
-    
+
     for (int i = 0; i < 4; i++) {
         pumps[i]->finished = false;
     }
@@ -179,28 +205,30 @@ void Machine::resetMachine() {
 
 }
 
+void Machine::beginEnjoy() {
+    clearDisplay();
+    blynkTerminalPrint("Enjoy!");
+    enjoyInitialTime = millis();
+    finalWeight = loadCellWeigh();
+}
 
-void Machine::run() {
-    runBlynk();
-    currentSelection = getBlynkCurrentSelection();
-    // static int ticks = 0;
-    // if (ticks >= 50000) {
-    //     ticks = 0;
-    //     Serial.print("currentSelection: ");
-    //     Serial.println(currentSelection);
-    // }
-    // ticks++;
-    terminalDisplay();
-    
-
-    static State previousState = enjoy;
-
+void Machine::checkStateChange() {
     if (previousState != state) {
         previousState = state;
         Serial.print("Sate is: ");
         Serial.println(state);
         updateNeopixelColour();
     } 
+}
+
+
+void Machine::run() {
+    runBlynk();
+
+    currentSelection = getBlynkCurrentSelection();
+    terminalDisplay();
+    
+    checkStateChange();
 
     switch (state) {
 
@@ -223,6 +251,7 @@ void Machine::run() {
                         Serial.println(pumps[i]->mixer);
                     }      
                     state = selectLiquor;
+                    selectedMixer = false;
                     currentSelection = 0;
                 }
             }
@@ -259,11 +288,16 @@ void Machine::run() {
             if (!initConfirmation) {
                 initConfirmation = getInitConfirmation();
             } else {
-                findAvailable();
-                state = displayMenu;
-                previousSelection = 1;
-                currentSelection = 0;
-                clearDisplay();
+                findAvailableCocktails();
+                if (cocktailInitSuccess()) {
+                    state = displayMenu;
+                    previousSelection = 1;
+                    currentSelection = 0;
+                    clearDisplay();
+                } else {
+                    state = selectMixers;
+                }
+                
             }
             break;
 
@@ -276,6 +310,7 @@ void Machine::run() {
             }
 
             break;
+            
 
         case makeDrink:
             if (!stepperFinished) {
@@ -285,27 +320,25 @@ void Machine::run() {
             } else if (!pumpsFinished) {
                 pumpsFinished = pumpsRun(pumps);  
             } else {
-                state = enjoy;  
+                state = enjoy; 
+                enjoyInitialTime = millis();
+                enjoyCurrentTime = 0; 
             }
             break;
 
         case enjoy:
             
-            static long initialTime = millis();
-            static long currentTime = 0;
-
-            if (currentTime == 0) {
-                clearDisplay();
-                blynkTerminalPrint("Enjoy!");
-                initialTime = millis();
-                finalWeight = loadCellWeigh();
+            if (enjoyCurrentTime == 0) {
+                beginEnjoy();
             }
-            if ((finalWeight - loadCellWeigh() >= 100) || (currentTime - initialTime) >= FIVE_SECONDS) {
-                currentTime = 0;
+
+            enjoyCurrentTime = millis();
+            long timePassed = enjoyCurrentTime - enjoyInitialTime;
+
+            if ((finalWeight - loadCellWeigh() >= 100) || timePassed >= FIVE_SECONDS) {
                 resetMachine();
                 state = displayMenu;
             }
-            currentTime = millis();
             break;
     }
 }

@@ -13,7 +13,6 @@ void loadCellInit() {
 
 long loadCellWeigh() {
     scale.power_up();
-
     long reading;
     if (scale.is_ready()) {
         reading = scale.get_units(5);

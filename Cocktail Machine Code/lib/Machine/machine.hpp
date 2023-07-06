@@ -25,14 +25,20 @@ class Machine {
     /// @brief Method to create cocktail objects to populate 'allCocktails' array
     void initCocktails();
 
-    /// @brief Method to find all available cocktails from 'allCocktails' array
-    void findAvailable();
+    
+    bool mixerInPumps(Mixer mixer);
+    bool mixerAvailable(int i);
+    bool liquorAvailable(int i);
+
     
     /// @brief Checks if the given cocktail is able to be made from the current mixers and liquor
     /// @param i The element in the 'allCocktails' array to check
     /// @return Cocktail available bool
     bool cocktailAvailable(int i);
 
+    /// @brief Method to find all available cocktails from 'allCocktails' array
+    void findAvailableCocktails();
+    bool cocktailInitSuccess();
     bool requestMixer();
     void requestLiquor();
     bool getInitConfirmation();
@@ -42,6 +48,8 @@ class Machine {
     void clearDisplay();
     void updateNeopixelColour();
     void resetMachine();
+    void beginEnjoy();
+    void checkStateChange();
     /// @brief The main FSM of the machine. Calls all peripherals when needed
     void run();
 
@@ -82,6 +90,9 @@ class Machine {
     /// @brief Flag raised when stepper motor has finished dispensing liquor.
     /// Reset before making new cocktail
     bool stepperFinished = false;
+    //enjoy variables
+    long enjoyInitialTime = 0;
+    long enjoyCurrentTime = 0;
 
 };
 

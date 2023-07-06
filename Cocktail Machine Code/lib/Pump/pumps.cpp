@@ -35,6 +35,7 @@ void pumpsInit(Pump *pumps[]) {
     pumps[2] = &pump3;
     pumps[3] = &pump4;
 }
+// "This function runs all the pumps until they are finished."
 
 bool pumpsRun(Pump *pumps[4]) {
     bool pumpsFinished = true;

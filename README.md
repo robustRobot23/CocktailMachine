@@ -11,7 +11,7 @@ Machine contains:
   - 1 OLED Screen
   - 2 rotary encoder dials and pushbuttons
   
-**Code still not close to working.** 
+**Code still not fully to working.** 
 Currently creating the code structure:
   Machine class
   Cocktail class
